@@ -36,6 +36,23 @@ class Value:
         
         return out
     
+    def __sub__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
+        return self + (-other)  # Reuse add by negating other
+    
+    def __neg__(self):  # for negative numbers
+        return self * -1
+    
+    def __pow__(self, other):
+        assert isinstance(other, (int, float)), "only supporting int/float powers for now"
+        out = Value(self.data ** other, (self,), f'**{other}')
+        
+        def _backward():
+            self.grad += other * (self.data ** (other - 1)) * out.grad
+        out._backward = _backward
+        
+        return out
+    
     def tanh(self):
         x = self.data
         t = (math.exp(2*x) - 1)/(math.exp(2*x) + 1)
@@ -46,6 +63,8 @@ class Value:
         out._backward = _backward
         
         return out
+    
+
     
     def backward(self):
         # Topological sort all children in the graph
