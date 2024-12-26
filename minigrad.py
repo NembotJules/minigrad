@@ -276,28 +276,30 @@ if __name__ == "__main__":
     # Set optimizer
     nn.set_optimizer('adam', lr=0.01)
 
-    # Training loop
-   # Training loop
-for epoch in range(100):
-    total_loss = 0
-    for x_i, y_i in zip(X, y):
-        # Convert inputs to Value objects
-        x = [Value(x) for x in x_i]
+     # Training loop
+    epochs = 100
+    for epoch in range(epochs):
+        total_loss = 0
+        for x_i, y_i in zip(X, y):
+            x = [Value(x) for x in x_i]
+            pred = nn.forward(x)
+            loss = (pred - Value(y_i))**2
+            nn.last_output = loss
+            
+            nn.zero_grad()
+            loss.backward()
+            nn.step()
+            
+            total_loss += loss.data
         
-        # Forward pass
-        pred = nn.forward(x)
-        loss = (pred - Value(y_i))**2
-        nn.last_output = loss  # Store the loss for visualization
-        
-        # Backward pass
-        nn.zero_grad()
-        loss.backward()
-        
-        # Optimize
-        nn.step()
-        
-        total_loss += loss.data
+        # Only print every 10 epochs but don't visualize
+        if epoch % 10 == 0:
+            print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
     
-    if epoch % 10 == 0:
-        print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
-        nn.visualize()  # Now this will visualize the loss computation graph
+    # Visualize only at the end
+    print("\nTraining completed! Final loss:", total_loss/len(X))
+    dot = draw_dot(nn.last_output)
+    dot.render('final_network', 
+              format='png',
+              cleanup=True,  # Remove the .dot file
+              view=True)     # Open the image
