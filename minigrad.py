@@ -262,39 +262,42 @@ class NeuralNetwork:
 
 # Example usage
 if __name__ == "__main__":
-    # Create a neural network with 2 inputs, [3, 1] means 3 neurons in hidden layer and 1 in output
-    nn = NeuralNetwork(2, [3, 1], activation=lambda x: x.tanh())
+    # Create a minimal neural network: 2 inputs -> 2 hidden -> 1 output
+    nn = NeuralNetwork(2, [2, 1], activation=lambda x: x.tanh())
 
-    # Training data
-    X = [[2.0, 3.0], [3.0, -1.0], [0.5, 1.0], [1.0, 1.0]]
-    y = [1.0, -1.0, -1.0, 1.0]
+    # Simple training data: XOR-like pattern
+    X = [[0.0, 0.0], [0.0, 1.0]]  # Reduced dataset
+    y = [0.0, 1.0]
 
     # Set optimizer
-    nn.set_optimizer('adam', lr=0.01)
+    nn.set_optimizer('adam', lr=0.1)  # Increased learning rate for faster convergence
 
-      # Training loop
-    epochs = 100
+    # Training loop
+    epochs = 10  # Reduced epochs
     for epoch in range(epochs):
         total_loss = 0
         for x_i, y_i in zip(X, y):
+            # Convert inputs to Value objects
             x = [Value(x) for x in x_i]
+            
+            # Forward pass
             pred = nn.forward(x)
             loss = (pred - Value(y_i))**2
             nn.last_output = loss
             
+            # Backward pass
             nn.zero_grad()
             loss.backward()
             nn.step()
             
             total_loss += loss.data
         
-        if epoch % 10 == 0:
-            print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
+        print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
     
     # Final visualization
     print("\nTraining completed! Final loss:", total_loss/len(X))
     dot = draw_dot(nn.last_output)
-    dot.render('final_network', 
+    dot.render('simple_network', 
               format='svg',
               cleanup=True,  # Remove the .dot file
               view=True)     # Open the image
