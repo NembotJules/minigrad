@@ -96,7 +96,7 @@ def trace(root):
     build(root)
     return nodes, edges
 
-def draw_dot(root, format='svg', rankdir='LR'):  # Keep left-to-right layout
+def draw_dot(root, format='svg', rankdir='LR'):
     """
     format: png | svg | ...
     rankdir: TB (top to bottom graph) | LR (left to right)
@@ -104,11 +104,12 @@ def draw_dot(root, format='svg', rankdir='LR'):  # Keep left-to-right layout
     dot = Digraph(format=format, 
                   graph_attr={
                       'rankdir': rankdir,
-                      'size': '12,8',  # Increased size
-                      'dpi': '300',    # Higher DPI
-                      'splines': 'ortho',  # Cleaner edge routing
-                      'nodesep': '0.5',    # Space between nodes
-                      'ranksep': '0.75'    # Space between ranks
+                      'ratio': 'expand',  # Allow graph to expand as needed
+                      'width': '100',     # Much wider width
+                      'height': '20',     # Taller height
+                      'margin': '0.1',    # Smaller margins
+                      'nodesep': '0.3',   # Space between nodes
+                      'ranksep': '0.3'    # Space between ranks
                   })
     
     nodes, edges = trace(root)
@@ -120,7 +121,7 @@ def draw_dot(root, format='svg', rankdir='LR'):  # Keep left-to-right layout
         dot.node(name=uid, 
                 label=f"{{ data: {n.data:.4f} | grad: {n.grad:.4f} }}", 
                 shape='record',
-                fontsize='14')  # Larger font
+                fontsize='14')
         
         if n._op:
             dot.node(name=uid + n._op, 
