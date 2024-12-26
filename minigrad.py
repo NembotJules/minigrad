@@ -96,33 +96,47 @@ def trace(root):
     build(root)
     return nodes, edges
 
-def draw_dot(root, format='svg', rankdir='LR'):
+def draw_dot(root, format='png', rankdir='TB'):  # Changed default to top-to-bottom
     """
     format: png | svg | ...
     rankdir: TB (top to bottom graph) | LR (left to right)
     """
-    dot = Digraph(format=format, graph_attr={'rankdir': rankdir})
+    dot = Digraph(format=format, 
+                  graph_attr={'rankdir': rankdir, 
+                            'ratio': '0.5',  # Adjust aspect ratio
+                            'size': '8,8'})  # Set size in inches
     
     nodes, edges = trace(root)
     
     for n in nodes:
-        # unique node id (needed for graphviz)
         uid = str(id(n))
         
-        # for any value in the graph, create a rectangular node for it
+        # Improved node formatting
+        label = f"""{{
+            data: {n.data:.4f}
+            grad: {n.grad:.4f}
+        }}"""
+        
+        # Make nodes bigger and more readable
         dot.node(name=uid, 
-                label=f"{{ data: {n.data:.4f} | grad: {n.grad:.4f} }}", 
-                shape='record')
+                label=label, 
+                shape='box',
+                style='rounded,filled',
+                fillcolor='lightblue',
+                fontsize='12')
         
         if n._op:
-            # if this value is a result of some operation, create an op node for it
-            dot.node(name=uid + n._op, label=n._op)
-            # and connect this node to it
-            dot.edge(uid + n._op, uid)
+            # Make operation nodes distinct
+            dot.node(name=uid + n._op, 
+                    label=n._op,
+                    shape='circle',
+                    style='filled',
+                    fillcolor='lightgreen',
+                    fontsize='12')
+            dot.edge(uid + n._op, uid, penwidth='1.5')
     
     for n1, n2 in edges:
-        # connect n1 to the op node of n2
-        dot.edge(str(id(n1)), str(id(n2)) + n2._op)
+        dot.edge(str(id(n1)), str(id(n2)) + n2._op, penwidth='1.5')
     
     return dot
 
