@@ -215,14 +215,17 @@ class NeuralNetwork:
     def __init__(self, nin: int, architecture: List[int], activation: Callable = None):
         self.model = MLP(nin, architecture, activation)
         self.optimizer = None
+        self.last_output = None  # Add this to track the last output
     
     def forward(self, x):
-        return self.model(x)
+        out = self.model(x)
+        self.last_output = out  # Store the output
+        return out
     
     def backward(self):
-        # Get the output node (assumed to be the last computation)
-        out = self.model.layers[-1].neurons[0]._prev.pop()
-        out.backward()
+        if self.last_output is None:
+            raise ValueError("No forward pass performed yet")
+        self.last_output.backward()
     
     def zero_grad(self):
         self.model.zero_grad()
@@ -239,11 +242,13 @@ class NeuralNetwork:
         self.optimizer.step()
     
     def visualize(self):
-        # Get the output node
-        out = self.model.layers[-1].neurons[0]._prev.pop()
-        dot = draw_dot(out)
+        if self.last_output is None:
+            raise ValueError("No forward pass performed yet")
+        dot = draw_dot(self.last_output)
         return dot.render('neural_network', view=True)
     
+
+
 
 # Example usage
 if __name__ == "__main__":
@@ -258,25 +263,27 @@ if __name__ == "__main__":
     nn.set_optimizer('adam', lr=0.01)
 
     # Training loop
-    for epoch in range(100):
-        total_loss = 0
-        for x_i, y_i in zip(X, y):
-            # Convert inputs to Value objects
-            x = [Value(x) for x in x_i]
-            
-            # Forward pass
-            pred = nn.forward(x)
-            loss = (pred - Value(y_i))**2
-            
-            # Backward pass
-            nn.zero_grad()
-            loss.backward()
-            
-            # Optimize
-            nn.step()
-            
-            total_loss += loss.data
+   # Training loop
+for epoch in range(100):
+    total_loss = 0
+    for x_i, y_i in zip(X, y):
+        # Convert inputs to Value objects
+        x = [Value(x) for x in x_i]
         
-        if epoch % 10 == 0:
-            print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
-            nn.visualize()  # Visualize the network state
+        # Forward pass
+        pred = nn.forward(x)
+        loss = (pred - Value(y_i))**2
+        nn.last_output = loss  # Store the loss for visualization
+        
+        # Backward pass
+        nn.zero_grad()
+        loss.backward()
+        
+        # Optimize
+        nn.step()
+        
+        total_loss += loss.data
+    
+    if epoch % 10 == 0:
+        print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
+        nn.visualize()  # Now this will visualize the loss computation graph
