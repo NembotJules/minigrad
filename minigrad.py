@@ -262,42 +262,33 @@ class NeuralNetwork:
 
 # Example usage
 if __name__ == "__main__":
-    # Create a minimal neural network: 2 inputs -> 2 hidden -> 1 output
-    nn = NeuralNetwork(2, [2, 1], activation=lambda x: x.tanh())
+    # Create a minimal neural network: 2 inputs -> 1 output
+    nn = NeuralNetwork(2, [1], activation=lambda x: x.tanh())
 
-    # Simple training data: XOR-like pattern
-    X = [[0.0, 0.0], [0.0, 1.0]]  # Reduced dataset
-    y = [0.0, 1.0]
+    # Single training example
+    X = [[2.0, 0.0]]  # Just one input
+    y = [1.0]        # Target output
 
     # Set optimizer
-    nn.set_optimizer('adam', lr=0.1)  # Increased learning rate for faster convergence
+    nn.set_optimizer('adam', lr=0.1)
 
-    # Training loop
-    epochs = 10  # Reduced epochs
-    for epoch in range(epochs):
-        total_loss = 0
-        for x_i, y_i in zip(X, y):
-            # Convert inputs to Value objects
-            x = [Value(x) for x in x_i]
-            
-            # Forward pass
-            pred = nn.forward(x)
-            loss = (pred - Value(y_i))**2
-            nn.last_output = loss
-            
-            # Backward pass
-            nn.zero_grad()
-            loss.backward()
-            nn.step()
-            
-            total_loss += loss.data
-        
-        print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
+    # Single forward and backward pass
+    x = [Value(x) for x in X[0]]
     
-    # Final visualization
-    print("\nTraining completed! Final loss:", total_loss/len(X))
-    dot = draw_dot(nn.last_output)
+    # Forward pass
+    pred = nn.forward(x)
+    loss = (pred - Value(y[0]))**2
+    nn.last_output = loss
+    
+    # Backward pass
+    nn.zero_grad()
+    loss.backward()
+    
+    # Visualize before optimization step
+    print(f'Prediction: {pred.data:.4f}')
+    print(f'Loss: {loss.data:.4f}')
+    dot = draw_dot(loss)
     dot.render('simple_network', 
               format='svg',
-              cleanup=True,  # Remove the .dot file
-              view=True)     # Open the image
+              cleanup=True,
+              view=True)
