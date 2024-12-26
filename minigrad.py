@@ -96,49 +96,44 @@ def trace(root):
     build(root)
     return nodes, edges
 
-def draw_dot(root, format='png', rankdir='TB'):  # Changed default to top-to-bottom
+def draw_dot(root, format='svg', rankdir='LR'):  # Keep left-to-right layout
     """
     format: png | svg | ...
     rankdir: TB (top to bottom graph) | LR (left to right)
     """
     dot = Digraph(format=format, 
-                  graph_attr={'rankdir': rankdir, 
-                            'ratio': '0.5',  # Adjust aspect ratio
-                            'size': '8,8'})  # Set size in inches
+                  graph_attr={
+                      'rankdir': rankdir,
+                      'size': '12,8',  # Increased size
+                      'dpi': '300',    # Higher DPI
+                      'splines': 'ortho',  # Cleaner edge routing
+                      'nodesep': '0.5',    # Space between nodes
+                      'ranksep': '0.75'    # Space between ranks
+                  })
     
     nodes, edges = trace(root)
     
     for n in nodes:
         uid = str(id(n))
         
-        # Improved node formatting
-        label = f"""{{
-            data: {n.data:.4f}
-            grad: {n.grad:.4f}
-        }}"""
-        
-        # Make nodes bigger and more readable
+        # Clean node formatting
         dot.node(name=uid, 
-                label=label, 
-                shape='box',
-                style='rounded,filled',
-                fillcolor='lightblue',
-                fontsize='12')
+                label=f"{{ data: {n.data:.4f} | grad: {n.grad:.4f} }}", 
+                shape='record',
+                fontsize='14')  # Larger font
         
         if n._op:
-            # Make operation nodes distinct
             dot.node(name=uid + n._op, 
                     label=n._op,
                     shape='circle',
-                    style='filled',
-                    fillcolor='lightgreen',
-                    fontsize='12')
-            dot.edge(uid + n._op, uid, penwidth='1.5')
+                    fontsize='14')
+            dot.edge(uid + n._op, uid)
     
     for n1, n2 in edges:
-        dot.edge(str(id(n1)), str(id(n2)) + n2._op, penwidth='1.5')
+        dot.edge(str(id(n1)), str(id(n2)) + n2._op)
     
     return dot
+
 
 class Module:
     def zero_grad(self):
@@ -276,7 +271,7 @@ if __name__ == "__main__":
     # Set optimizer
     nn.set_optimizer('adam', lr=0.01)
 
-     # Training loop
+      # Training loop
     epochs = 100
     for epoch in range(epochs):
         total_loss = 0
@@ -292,14 +287,13 @@ if __name__ == "__main__":
             
             total_loss += loss.data
         
-        # Only print every 10 epochs but don't visualize
         if epoch % 10 == 0:
             print(f'Epoch {epoch}, Loss: {total_loss/len(X)}')
     
-    # Visualize only at the end
+    # Final visualization
     print("\nTraining completed! Final loss:", total_loss/len(X))
     dot = draw_dot(nn.last_output)
     dot.render('final_network', 
-              format='png',
+              format='svg',
               cleanup=True,  # Remove the .dot file
               view=True)     # Open the image
