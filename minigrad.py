@@ -104,12 +104,13 @@ def draw_dot(root, format='svg', rankdir='LR'):
     dot = Digraph(format=format, 
                   graph_attr={
                       'rankdir': rankdir,
-                      'ratio': 'expand',  # Allow graph to expand as needed
-                      'width': '100',     # Much wider width
-                      'height': '50',     # Taller height
-                      'margin': '0.1',    # Smaller margins
-                      'nodesep': '0.3',   # Space between nodes
-                      'ranksep': '0.3'    # Space between ranks
+                      'bgcolor': '#ffffff',  # White background
+                      'ratio': 'expand',
+                      'width': '100',
+                      'height': '50',
+                      'margin': '0.1',
+                      'nodesep': '0.5',     # Increased space between nodes
+                      'ranksep': '0.5'      # Increased rank separation
                   })
     
     nodes, edges = trace(root)
@@ -117,24 +118,56 @@ def draw_dot(root, format='svg', rankdir='LR'):
     for n in nodes:
         uid = str(id(n))
         
-        # Clean node formatting
+        # Get the variable name if it exists in locals/globals
+        var_name = None
+        for name, value in globals().items():
+            if value is n:
+                var_name = name
+                break
+        if var_name is None:
+            for name, value in locals().items():
+                if value is n:
+                    var_name = name
+                    break
+        
+        # Enhanced node formatting
+        label = f"""{{
+            {var_name if var_name else ''}
+            |data: {n.data:.4f}
+            |grad: {n.grad:.4f}
+        }}"""
+        
         dot.node(name=uid, 
-                label=f"{{ data: {n.data:.4f} | grad: {n.grad:.4f} }}", 
+                label=label, 
                 shape='record',
-                fontsize='14')
+                style='filled',
+                fillcolor='#e8f3ff',  # Light blue background
+                color='#2878b5',      # Darker blue border
+                fontname='Arial',
+                fontsize='12')
         
         if n._op:
+            # Operation node styling
             dot.node(name=uid + n._op, 
                     label=n._op,
                     shape='circle',
-                    fontsize='14')
-            dot.edge(uid + n._op, uid)
+                    style='filled',
+                    fillcolor='#ff9999',  # Light red for operations
+                    color='#cc4444',      # Darker red border
+                    fontname='Arial Bold',
+                    fontsize='12',
+                    width='0.5',
+                    height='0.5')
+            dot.edge(uid + n._op, uid, color='#666666')
     
+    # Edge styling
     for n1, n2 in edges:
-        dot.edge(str(id(n1)), str(id(n2)) + n2._op)
+        dot.edge(str(id(n1)), 
+                str(id(n2)) + n2._op, 
+                color='#666666',
+                penwidth='1.5')
     
     return dot
-
 
 class Module:
     def zero_grad(self):
