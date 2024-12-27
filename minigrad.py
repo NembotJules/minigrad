@@ -106,7 +106,7 @@ def draw_dot(root, format='svg', rankdir='LR'):
                       'rankdir': rankdir,
                       'ratio': 'expand',  # Allow graph to expand as needed
                       'width': '100',     # Much wider width
-                      'height': '20',     # Taller height
+                      'height': '50',     # Taller height
                       'margin': '0.1',    # Smaller margins
                       'nodesep': '0.3',   # Space between nodes
                       'ranksep': '0.3'    # Space between ranks
