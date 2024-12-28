@@ -108,6 +108,7 @@ class SGD(Optimizer):
 class NeuralNetwork: 
     def __init__(self, nin: int, architecture: List[int], activation: callable = None) -> None:
         self.model = MLP(nin, architecture, activation)
+        self.parameters = self.model.parameters()
         self.optimizer = None
         self.last_output = None # tracking the last output
 
@@ -231,6 +232,4 @@ class NeuralNetwork:
         dot.render(filename, view=True, cleanup=True)
         return dot
 
-    def parameters(self):
-        """Return all parameters (weights and biases) of the network"""
-        return self.model.parameters()
+    
