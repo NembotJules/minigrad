@@ -1,0 +1,108 @@
+digraph {
+	graph [bgcolor="#ffffff" height=50 margin=0.1 nodesep=0.5 rankdir=LR ranksep=0.5 ratio=expand width=100]
+	137852678252048 [label="{
+            n
+            |data: 0.9260
+            |grad: -0.0242
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	137852678253072 [label="{
+            n
+            |data: -0.0000
+            |grad: -0.0121
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678253072*" [label="*" color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678253072*" -> 137852678253072 [color="#666666"]
+	137852678253648 [label="{
+            n
+            |data: -0.0558
+            |grad: -0.1116
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678253648+" [label="+" color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678253648+" -> 137852678253648 [color="#666666"]
+	137852678252112 [label="{
+            n
+            |data: -0.7814
+            |grad: 0.0000
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	137852678252624 [label="{
+            n
+            |data: 0.0000
+            |grad: 0.0095
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	137852678253200 [label="{
+            n
+            |data: 1.7753
+            |grad: -0.0121
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678253200+" [label="+" color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678253200+" -> 137852678253200 [color="#666666"]
+	137852678252176 [label="{
+            n
+            |data: -0.0767
+            |grad: -0.0121
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	137852678252688 [label="{
+            n
+            |data: 2.0000
+            |grad: -0.0112
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	137852678253264 [label="{
+            pred
+            |data: 0.9442
+            |grad: -0.1116
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678253264tanh" [label=tanh color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678253264tanh" -> 137852678253264 [color="#666666"]
+	137852678253840 [label="{
+            loss
+            |data: 0.0031
+            |grad: 1.0000
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678253840**2" [label="**2" color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678253840**2" -> 137852678253840 [color="#666666"]
+	137852678253328 [label="{
+            n
+            |data: 1.0000
+            |grad: 0.1116
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	137852678252880 [label="{
+            n
+            |data: 1.8520
+            |grad: -0.0121
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678252880*" [label="*" color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678252880*" -> 137852678252880 [color="#666666"]
+	137852678253392 [label="{
+            n
+            |data: -1.0000
+            |grad: -0.1116
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	137852678252944 [label="{
+            n
+            |data: 1.7753
+            |grad: -0.0121
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678252944+" [label="+" color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678252944+" -> 137852678252944 [color="#666666"]
+	137852678253520 [label="{
+            n
+            |data: -1.0000
+            |grad: -0.1116
+        }" color="#2878b5" fillcolor="#e8f3ff" fontname=Arial fontsize=12 shape=record style=filled]
+	"137852678253520*" [label="*" color="#cc4444" fillcolor="#ff9999" fontname="Arial Bold" fontsize=12 height=0.5 shape=circle style=filled width=0.5]
+	"137852678253520*" -> 137852678253520 [color="#666666"]
+	137852678252944 -> "137852678253200+" [color="#666666" penwidth=1.5]
+	137852678253648 -> "137852678253840**2" [color="#666666" penwidth=1.5]
+	137852678253328 -> "137852678253520*" [color="#666666" penwidth=1.5]
+	137852678252880 -> "137852678252944+" [color="#666666" penwidth=1.5]
+	137852678253072 -> "137852678253200+" [color="#666666" penwidth=1.5]
+	137852678252688 -> "137852678252880*" [color="#666666" penwidth=1.5]
+	137852678253520 -> "137852678253648+" [color="#666666" penwidth=1.5]
+	137852678253264 -> "137852678253648+" [color="#666666" penwidth=1.5]
+	137852678252176 -> "137852678252944+" [color="#666666" penwidth=1.5]
+	137852678253200 -> "137852678253264tanh" [color="#666666" penwidth=1.5]
+	137852678252048 -> "137852678252880*" [color="#666666" penwidth=1.5]
+	137852678252624 -> "137852678253072*" [color="#666666" penwidth=1.5]
+	137852678252112 -> "137852678253072*" [color="#666666" penwidth=1.5]
+	137852678253392 -> "137852678253520*" [color="#666666" penwidth=1.5]
+}
