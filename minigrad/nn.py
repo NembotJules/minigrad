@@ -199,3 +199,6 @@ class MLP(Module):
         # Save the graph
         dot.render(filename, view=True, cleanup=True)
         return dot
+
+    def __repr__(self):
+        return f"MLP with {len(self.layers)} layers and {len(self.parameters())} parameters"
