@@ -67,8 +67,12 @@ class MLP(Module):
                 if nin = 3 and nouts = [4, 2], then sz = [3, 4, 2]
                 This means 3 inputs, 01 layer of 04 neurons, and 01 layer of 02 neurons
         """ 
+
+        super().__init__()
         sz = [nin] + nouts
         self.layers = [Layer(sz[i], sz[i+1], activation) for i in range(len(nouts))] #Defining the input and output of each layer sequentially...
+        self.optimizer = None
+        self.last_output = None
 
     def __call__(self, x): # forward pass...
         for layer in self.layers: 
