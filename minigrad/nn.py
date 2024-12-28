@@ -61,5 +61,44 @@ class MLP(Module):
 
     def parameters(self):
         return [p for layer in self.layers for p in layer.parameters()]
+    
+
+class Optimizer: 
+    def __init__(self, parameters):
+        self.parameters = parameters
+
+class SGD(Optimizer): 
+    def __init__(self, parameters, lr = 0.01):
+        super().__init__(parameters)
+        self.lr = lr
+    
+    def step(self): 
+        for p in self.parameters: 
+            p.data -= self.lr * p.grad
+
+# class Adam(Optimizer):
+#     def __init__(self, parameters, lr=0.001, betas=(0.9, 0.999), eps=1e-8):
+#         super().__init__(parameters)
+#         self.lr = lr
+#         self.betas = betas
+#         self.eps = eps
+#         self.m = [0.0 for _ in parameters]  # First moment
+#         self.v = [0.0 for _ in parameters]  # Second moment
+#         self.t = 0  # Timestep
+    
+#     def step(self):
+#         self.t += 1
+#         b1, b2 = self.betas
+        
+#         for i, p in enumerate(self.parameters):
+#             g = p.grad
+#             self.m[i] = b1 * self.m[i] + (1 - b1) * g
+#             self.v[i] = b2 * self.v[i] + (1 - b2) * g * g
+            
+#             # Bias correction
+#             m_hat = self.m[i] / (1 - b1**self.t)
+#             v_hat = self.v[i] / (1 - b2**self.t)
+            
+#             p.data -= self.lr * m_hat / (math.sqrt(v_hat) + self.eps)
         
  
