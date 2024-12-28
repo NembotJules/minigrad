@@ -96,6 +96,10 @@ class Value:
     def __rtruediv__(self, other): 
         other = other if isinstance(other, Value) else Value(other)
         return other * self ** -1
+    
+    def __rmul__(self, other): # other * self
+        return self * other
+
 
 # Example usage
 if __name__ == "__main__":

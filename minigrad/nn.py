@@ -13,7 +13,7 @@ class Module:
     
 
 class Neuron(Module): 
-    def __init__(self, nin: int, activation: callable = None):
+    def __init__(self, nin: int, activation: callable = Value.relu):
 
         self.w = [Value(random.uniform(-1, 1)) for _ in range(nin)]
         self.b = Value(random.uniform(-1, 1))
@@ -28,7 +28,7 @@ class Neuron(Module):
     
     
 class Layer(Module): 
-    def __init__(self, nin: int, nout: int, activation: callable = None):
+    def __init__(self, nin: int, nout: int, activation: callable = Value.relu):
         self.neurons = [Neuron(nin, activation) for _ in range(nout)]
 
     def __call__(self, x): 
@@ -54,7 +54,7 @@ class SGD(Optimizer):
 
 
 class MLP(Module): 
-    def __init__(self, nin: int, nouts: List[int], activation: callable = None): 
+    def __init__(self, nin: int, nouts: List[int], activation: callable = Value.relu): 
 
         """
         nin: number of inputs(input features)
