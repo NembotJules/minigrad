@@ -1,4 +1,5 @@
 from minigrad.engine import Value
+from typing import List
 import random
 
 class Module: 
@@ -35,3 +36,17 @@ class Layer(Module):
     
     def parameters(self):
         return[p for n in self.neurons for p in n.parameters()]
+    
+class MLP(Module): 
+    def __init__(self, nin: int, nouts: List[int], activation: callable = None): 
+        sz = [nin] + nouts
+        self.layers = [Layer(sz[i], sz[i+1], activation) for i in range(len(nouts))]
+
+    def __call__(self, x):
+        for layer in self.layers: 
+            x = layer(x)
+        return x
+
+    def parameters(self):
+        return [p for layer in self.layers for p in layer.parameters()]
+        
