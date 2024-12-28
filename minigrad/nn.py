@@ -63,6 +63,9 @@ class MLP(Module):
     def parameters(self):
         return [p for layer in self.layers for p in layer.parameters()]
     
+    def __repr__(self):
+        return f"MLP of [{', '.join(str(layer) for layer in self.layers)}]"
+    
 
 class Optimizer: 
     def __init__(self, parameters):
