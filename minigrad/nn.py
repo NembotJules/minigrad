@@ -38,7 +38,21 @@ class Layer(Module):
     def parameters(self):
         return[p for n in self.neurons for p in n.parameters()]
     
+
+class Optimizer: 
+    def __init__(self, parameters):
+        self.parameters = parameters
+
+class SGD(Optimizer): 
+    def __init__(self, parameters, lr = 0.01):
+        super().__init__(parameters)
+        self.lr = lr
     
+    def step(self): 
+        for p in self.parameters: 
+            p.data -= self.lr * p.grad
+
+
 class MLP(Module): 
     def __init__(self, nin: int, nouts: List[int], activation: callable = None): 
 
@@ -64,83 +78,33 @@ class MLP(Module):
     def parameters(self):
         return [p for layer in self.layers for p in layer.parameters()]
     
-    
-
-class Optimizer: 
-    def __init__(self, parameters):
-        self.parameters = parameters
-
-class SGD(Optimizer): 
-    def __init__(self, parameters, lr = 0.01):
-        super().__init__(parameters)
-        self.lr = lr
-    
-    def step(self): 
-        for p in self.parameters: 
-            p.data -= self.lr * p.grad
-
-# class Adam(Optimizer):
-#     def __init__(self, parameters, lr=0.001, betas=(0.9, 0.999), eps=1e-8):
-#         super().__init__(parameters)
-#         self.lr = lr
-#         self.betas = betas
-#         self.eps = eps
-#         self.m = [0.0 for _ in parameters]  # First moment
-#         self.v = [0.0 for _ in parameters]  # Second moment
-#         self.t = 0  # Timestep
-    
-#     def step(self):
-#         self.t += 1
-#         b1, b2 = self.betas
-        
-#         for i, p in enumerate(self.parameters):
-#             g = p.grad
-#             self.m[i] = b1 * self.m[i] + (1 - b1) * g
-#             self.v[i] = b2 * self.v[i] + (1 - b2) * g * g
-            
-#             # Bias correction
-#             m_hat = self.m[i] / (1 - b1**self.t)
-#             v_hat = self.v[i] / (1 - b2**self.t)
-            
-#             p.data -= self.lr * m_hat / (math.sqrt(v_hat) + self.eps)
-        
-
-class NeuralNetwork: 
-    def __init__(self, nin: int, architecture: List[int], activation: callable = None) -> None:
-        self.model = MLP(nin, architecture, activation)
-        self.parameters = self.model.parameters()
-        self.optimizer = None
-        self.last_output = None # tracking the last output
-
-    def forward(self, x): 
-        out = self.model(x)
-        self.last_output = out  #storing the output
-        return out
-    
-    def backward(self): 
-        if self.last_output is None: 
-            raise ValueError("No forward pass perform yet")
-        
+    def backward(self):
+        """Backward pass"""
+        if self.last_output is None:
+            raise ValueError("No forward pass performed yet")
         self.last_output.backward()
 
-    def zero_grad(self): 
-        self.model.zero_grad()
+    def zero_grad(self):
+        """Zero out all parameter gradients"""
+        for p in self.parameters():
+            p.grad = 0.0
 
-    def set_optimizer(self, optimizer_name = 'sgd', **kwargs): 
-        if optimizer_name.lower() == 'adam': 
+    def set_optimizer(self, optimizer_name='sgd', **kwargs):
+        """Set the optimizer for parameter updates"""
+        if optimizer_name.lower() == 'adam':
             pass
-           # self.optimizer = Adam(self.model.parameters(), **kwargs)
-        elif optimizer_name.lower() =='sgd': 
-            self.optimizer = SGD(self.model.parameters(), **kwargs)
+            # self.optimizer = Adam(self.parameters(), **kwargs)
+        elif optimizer_name.lower() == 'sgd':
+            self.optimizer = SGD(self.parameters(), **kwargs)
 
-  
-    def step(self): 
-        if self.optimizer is None: 
-            raise ValueError("No Optimizer set. Call set_optimizer() first")
+    def step(self):
+        """Perform one optimization step"""
+        if self.optimizer is None:
+            raise ValueError("No optimizer set. Call set_optimizer() first")
         self.optimizer.step()
 
     def trace(self, root):
-        # builds a set of all nodes and edges in a graph
+        """Build a set of all nodes and edges in the graph"""
         nodes, edges = set(), set()
         
         def build(v):
@@ -231,5 +195,3 @@ class NeuralNetwork:
         # Save the graph
         dot.render(filename, view=True, cleanup=True)
         return dot
-
-    
