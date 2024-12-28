@@ -39,10 +39,22 @@ class Layer(Module):
     
 class MLP(Module): 
     def __init__(self, nin: int, nouts: List[int], activation: callable = None): 
-        sz = [nin] + nouts
-        self.layers = [Layer(sz[i], sz[i+1], activation) for i in range(len(nouts))]
 
-    def __call__(self, x):
+        """
+        nin: number of inputs(input features)
+
+        nouts: list of numbers representing the size of each layer
+
+        activation: activation function to be used in each neuron
+
+        sz: creates a list of layer sizes including input size. For example: 
+                if nin = 3 and nouts = [4, 2], then sz = [3, 4, 2]
+                This means 3 inputs, 01 layer of 04 neurons, and 01 layer of 02 neurons
+        """ 
+        sz = [nin] + nouts
+        self.layers = [Layer(sz[i], sz[i+1], activation) for i in range(len(nouts))] #Defining the input and output of each layer sequentially...
+
+    def __call__(self, x): # forward pass...
         for layer in self.layers: 
             x = layer(x)
         return x
