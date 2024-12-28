@@ -21,17 +21,17 @@ print(f"e.data: {e.data}")  # Should be 50.0
 f = e**2 + 5 
 f.name = 'f'
 
-print(f"f.data: {f.data}")  # Should be 25005
+print(f"f.data: {f.data}")  # Should be 2505
 
 g = f * f 
 g.name = 'g'
 
-print(f"g.data: {g.data}")  # Should be 65025
+print(f"g.data: {g.data}")  # Should be 6275025.0
 
 h = g * 2 - 3
 h.name = 'h'
 
-print(f"h.data: {h.data}")  # Should be 4228250622
+print(f"h.data: {h.data}")  # Should be 12550047.0
 
 h.backward()
 
@@ -42,7 +42,7 @@ print(f"f.grad: {f.grad}")
 print(f"e.grad: {e.grad}")
 print(f"d.grad: {d.grad}")
 print(f"c.grad: {c.grad}")
-print(f"b.grad: {b.grad}")
-print(f"a.grad: {a.grad}")
+print(f"b.grad: {b.grad}") #20040000.0
+print(f"a.grad: {a.grad}") #20040000.0
 
 draw_nn(h)
