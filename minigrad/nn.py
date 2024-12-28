@@ -38,6 +38,9 @@ class Layer(Module):
     def parameters(self):
         return[p for n in self.neurons for p in n.parameters()]
     
+    def __repr__(self):
+        return f"Layer of {len(self.neurons)} neurons"
+    
 class MLP(Module): 
     def __init__(self, nin: int, nouts: List[int], activation: callable = None): 
 
@@ -65,7 +68,7 @@ class MLP(Module):
     
     def __repr__(self):
         sizes = [len(layer.neurons) for layer in self.layers]
-        return f"MLP of size [" + ' -> '.join(str(size) for size in sizes) + "]"
+        return f"MLP of size [{' -> '.join(str(size) for size in sizes)}]"
     
 
 class Optimizer: 
@@ -135,7 +138,9 @@ class NeuralNetwork:
             self.optimizer = SGD(self.model.parameters(), **kwargs)
 
     def __repr__(self):
-        return f"Neural Network: {self.model}"
+        if not hasattr(self, 'model') or self.model is None:
+            return "Neural Network (uninitialized)"
+        return f"Neural Network: {repr(self.model)}"
 
     def step(self): 
         if self.optimizer is None: 
