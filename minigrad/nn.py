@@ -63,8 +63,7 @@ class MLP(Module):
     def parameters(self):
         return [p for layer in self.layers for p in layer.parameters()]
     
-    def __repr__(self):
-        return f"MLP of [{', '.join(str(layer) for layer in self.layers)}]"
+    
     
 
 class Optimizer: 
@@ -132,6 +131,9 @@ class NeuralNetwork:
            # self.optimizer = Adam(self.model.parameters(), **kwargs)
         elif optimizer_name.lower() =='sgd': 
             self.optimizer = SGD(self.model.parameters(), **kwargs)
+
+    def __repr__(self):
+        return f"MLP of [{', '.join(str(self.model.layer) for layer in self.model.layers)}]"
 
     def step(self): 
         if self.optimizer is None: 
