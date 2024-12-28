@@ -134,7 +134,7 @@ class NeuralNetwork:
             self.optimizer = SGD(self.model.parameters(), **kwargs)
 
     def __repr__(self):
-        return f"MLP of [{', '.join(str(self.model.layer) for layer in self.model.layers)}]"
+        return f"Neural Network: {self.model}"
 
     def step(self): 
         if self.optimizer is None: 
