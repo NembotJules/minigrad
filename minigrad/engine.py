@@ -90,6 +90,17 @@ class Value:
         for v in reversed(topo):
             v._backward()
 
+    
+    def __radd__(self, other): # other + self
+        return self + other
+
+    def __sub__(self, other): # self - other
+        return self + (-other)
+
+    def __rsub__(self, other): # other - self
+        return other + (-self)
+
+
 
     def __truediv__(self, other): 
         other = other if isinstance(other, Value) else Value(other)
