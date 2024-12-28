@@ -1,5 +1,6 @@
 from minigrad.engine import Value
 from typing import List
+from graphviz import Digraph
 import random
 
 class Module: 
@@ -101,4 +102,123 @@ class SGD(Optimizer):
             
 #             p.data -= self.lr * m_hat / (math.sqrt(v_hat) + self.eps)
         
- 
+
+class NeuralNetwork: 
+    def __init__(self, nin: int, architecture: List[int], activation: callable = None) -> None:
+        self.model = MLP(nin, architecture, activation)
+        self.optimizer = None
+        self.last_output = None # tracking the last output
+
+    def forward(self, x): 
+        out = self.model(x)
+        self.last_output = out  #storing the output
+        return out
+    
+    def backward(self): 
+        if self.last_output is None: 
+            raise ValueError("No forward pass perform yet")
+        
+        self.last_output.backward()
+
+    def zero_grad(self): 
+        self.model.zero_grad()
+
+    def set_optimizer(self, optimizer_name = 'sgd', **kwargs): 
+        if optimizer_name.lower() == 'adam': 
+            pass
+           # self.optimizer = Adam(self.model.parameters(), **kwargs)
+        elif optimizer_name.lower() =='sgd': 
+            self.optimizer = SGD(self.model.parameters(), **kwargs)
+
+    def step(self): 
+        if self.optimizer is None: 
+            raise ValueError("No Optimizer set. Call set_optimizer() first")
+        self.optimizer.step()
+
+    def trace(self, root):
+        # builds a set of all nodes and edges in a graph
+        nodes, edges = set(), set()
+        
+        def build(v):
+            if v not in nodes:
+                nodes.add(v)
+                for child in v._prev:
+                    edges.add((child, v))
+                    build(child)
+        build(root)
+        return nodes, edges
+
+    def draw_nn(self, root, format='svg', rankdir='LR'):
+        """
+        Draw the Neural Network with calculated gradients for each weights.
+        You should pass the last output element, and it will draw the neural network, back from that point.
+        format: png | svg | ...
+        rankdir: TB (top to bottom graph) | LR (left to right)
+        """
+        dot = Digraph(format=format, 
+                    graph_attr={
+                        'rankdir': rankdir,
+                        'bgcolor': '#ffffff',  # White background
+                        'ratio': 'expand',
+                        'width': '100',
+                        'height': '50',
+                        'margin': '0.1',
+                        'nodesep': '0.5',     # Increased space between nodes
+                        'ranksep': '0.5'      # Increased rank separation
+                    })
+        
+        nodes, edges = self.trace(root)
+        
+        for n in nodes:
+            uid = str(id(n))
+            
+            # Get the variable name if it exists in locals/globals
+            var_name = None
+            for name, value in globals().items():
+                if value is n:
+                    var_name = name
+                    break
+            if var_name is None:
+                for name, value in locals().items():
+                    if value is n:
+                        var_name = name
+                        break
+            
+            # Enhanced node formatting
+            label = f"""{{
+                {var_name if var_name else ''}
+                |data: {n.data:.4f}
+                |grad: {n.grad:.4f}
+            }}"""
+            
+            dot.node(name=uid, 
+                    label=label, 
+                    shape='record',
+                    style='filled',
+                    fillcolor='#e8f3ff',  # Light blue background
+                    color='#2878b5',      # Darker blue border
+                    fontname='Arial',
+                    fontsize='12')
+            
+            if n._op:
+                # Operation node styling
+                dot.node(name=uid + n._op, 
+                        label=n._op,
+                        shape='circle',
+                        style='filled',
+                        fillcolor='#ff9999',  # Light red for operations
+                        color='#cc4444',      # Darker red border
+                        fontname='Arial Bold',
+                        fontsize='12',
+                        width='0.5',
+                        height='0.5')
+                dot.edge(uid + n._op, uid, color='#666666')
+        
+        # Edge styling
+        for n1, n2 in edges:
+            dot.edge(str(id(n1)), 
+                    str(id(n2)) + n2._op, 
+                    color='#666666',
+                    penwidth='1.5')
+        
+        return dot
