@@ -148,23 +148,25 @@ class NeuralNetwork:
         build(root)
         return nodes, edges
 
-    def draw_nn(self, root, format='svg', rankdir='LR'):
+    def draw_nn(self, root, filename='neural_network', format='svg', rankdir='LR'):
         """
-        Draw the Neural Network with calculated gradients for each weights.
-        You should pass the last output element, and it will draw the neural network, back from that point.
-        format: png | svg | ...
-        rankdir: TB (top to bottom graph) | LR (left to right)
+        Draw and save the Neural Network computation graph.
+        
+        Args:
+            root: The output Value node to start the visualization from
+            filename: Name of the output file (without extension)
+            format: Output format ('svg', 'png', etc.)
+            rankdir: Graph direction ('LR' for left-to-right, 'TB' for top-to-bottom)
         """
         dot = Digraph(format=format, 
                     graph_attr={
                         'rankdir': rankdir,
-                        'bgcolor': '#ffffff',  # White background
-                        'ratio': 'expand',
-                        'width': '100',
-                        'height': '50',
-                        'margin': '0.1',
-                        'nodesep': '0.5',     # Increased space between nodes
-                        'ranksep': '0.5'      # Increased rank separation
+                        'bgcolor': '#ffffff',
+                        'splines': 'ortho',        # Orthogonal lines for cleaner look
+                        'nodesep': '0.8',          # Increased space between nodes
+                        'ranksep': '1.0',          # Increased rank separation
+                        'fontsize': '12',
+                        'concentrate': 'true',      # Merge edges when possible
                     })
         
         nodes, edges = self.trace(root)
@@ -172,7 +174,7 @@ class NeuralNetwork:
         for n in nodes:
             uid = str(id(n))
             
-            # Get the variable name if it exists in locals/globals
+            # Get the variable name if it exists
             var_name = None
             for name, value in globals().items():
                 if value is n:
@@ -184,21 +186,18 @@ class NeuralNetwork:
                         var_name = name
                         break
             
-            # Enhanced node formatting
-            label = f"""{{
-                {var_name if var_name else ''}
-                |data: {n.data:.4f}
-                |grad: {n.grad:.4f}
-            }}"""
+            # Enhanced node formatting with HTML-like label
+            label = f'''<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD>{var_name if var_name else ''}</TD></TR>
+                <TR><TD>data: {n.data:.4f}</TD></TR>
+                <TR><TD>grad: {n.grad:.4f}</TD></TR>
+            </TABLE>>'''
             
             dot.node(name=uid, 
                     label=label, 
-                    shape='record',
-                    style='filled',
-                    fillcolor='#e8f3ff',  # Light blue background
-                    color='#2878b5',      # Darker blue border
-                    fontname='Arial',
-                    fontsize='12')
+                    shape='none',           # Using none shape for HTML-like labels
+                    style='rounded',        # Rounded corners
+                    fontname='Arial')
             
             if n._op:
                 # Operation node styling
@@ -206,19 +205,25 @@ class NeuralNetwork:
                         label=n._op,
                         shape='circle',
                         style='filled',
-                        fillcolor='#ff9999',  # Light red for operations
-                        color='#cc4444',      # Darker red border
+                        fillcolor='#ff9999',
+                        color='#cc4444',
                         fontname='Arial Bold',
-                        fontsize='12',
+                        fontsize='10',
                         width='0.5',
                         height='0.5')
-                dot.edge(uid + n._op, uid, color='#666666')
+                dot.edge(uid + n._op, uid, 
+                        color='#666666',
+                        penwidth='1.2',
+                        arrowsize='0.8')
         
         # Edge styling
         for n1, n2 in edges:
             dot.edge(str(id(n1)), 
                     str(id(n2)) + n2._op, 
                     color='#666666',
-                    penwidth='1.5')
+                    penwidth='1.2',
+                    arrowsize='0.8')
         
+        # Save the graph
+        dot.render(filename, view=True, cleanup=True)
         return dot
