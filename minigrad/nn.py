@@ -230,3 +230,7 @@ class NeuralNetwork:
         # Save the graph
         dot.render(filename, view=True, cleanup=True)
         return dot
+
+    def parameters(self):
+        """Return all parameters (weights and biases) of the network"""
+        return self.model.parameters()
