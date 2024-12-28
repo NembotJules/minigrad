@@ -1,12 +1,14 @@
 import math
 
+
 class Value: 
-    def __init__(self, data, _children=(), _op=''):
+    def __init__(self, data, _children=(), _op='', name = None):
         self.data = data
         self.grad = 0.0  # Initialize gradient to zero
         self._backward = lambda: None  # Default backward function
         self._prev = set(_children)  # Track dependencies
         self._op = _op  # Operation that created this value
+        self.name = name
     
     def __repr__(self) -> str:
         return f"Value(data={self.data})"
@@ -99,43 +101,5 @@ class Value:
     
     def __rmul__(self, other): # other * self
         return self * other
-
-
-# Example usage
-if __name__ == "__main__":
-
-    a = Value(2.0)
-    b = Value(3.0)
-
-    c = b + a
-    print(f"c.data: {c.data}")  # Should be 5.0
-
-    d = c ** 2
-    print(f"d.data: {d.data}")  # Should be 25.0
-
-    e = d * 2
-    print(f"e.data: {e.data}")  # Should be 50.0
-
-    f = e**2 + 5 
-
-    print(f"f.data: {f.data}")  # Should be 25005
-
-    g = f * f 
-
-    print(f"g.data: {g.data}")  # Should be 65025
-
-    h = g * 2 - 3
-
-    print(f"h.data: {h.data}")  # Should be 4228250622
-
-    h.backward()
-
-    print("\nGradients:")
-    print(f"h.grad: {h.grad}")
-    print(f"g.grad: {g.grad}")
-    print(f"f.grad: {f.grad}")
-    print(f"e.grad: {e.grad}")
-    print(f"d.grad: {d.grad}")
-    print(f"c.grad: {c.grad}")
-    print(f"b.grad: {b.grad}")
-    print(f"a.grad: {a.grad}")
+    def __repr__(self):
+        return f"Value(data={self.data}, grad={self.grad}, name = {self.name})"
